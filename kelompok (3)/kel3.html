@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Sop Buah Segar — RPLapak</title>
+    <meta name="theme-color" content="#10b981" />
+    <style>
+      :root {
+        --bg: #f9fafb;
+        --text: #1f2937;
+        --muted: #6b7280;
+        --brand: #10b981;
+        --brand-dark: #059669;
+        --card: #ffffff;
+        --radius: 14px;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: system-ui, sans-serif;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      header {
+        background: #fff;
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        border-bottom: 1px solid #e5e7eb;
+      }
+      header .logo {
+        font-weight: 700;
+        color: var(--brand);
+        cursor: pointer;
+        text-decoration: none;
+      }
+
+      /* Gallery scroll horizontal */
+      .gallery {
+        background: #fff;
+        padding: 16px;
+        overflow-x: auto;
+        display: flex;
+        gap: 10px;
+        scroll-snap-type: x mandatory;
+      }
+      .gallery img {
+        flex: 0 0 100%;
+        max-width: 100%;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        scroll-snap-align: center;
+        aspect-ratio: 1 / 1; /* biar gambar tidak gepeng */
+        object-fit: cover;
+      }
+
+      .product {
+        background: var(--card);
+        padding: 16px;
+        margin-top: 8px;
+      }
+      .product h1 {
+        font-size: 20px;
+        margin-bottom: 6px;
+      }
+      .price {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--brand-dark);
+        margin-bottom: 8px;
+      }
+      .muted {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .options {
+        margin: 14px 0;
+        display: flex;
+        gap: 10px;
+      }
+      .option {
+        border: 1px solid #d1d5db;
+        padding: 8px 14px;
+        border-radius: var(--radius);
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 14px;
+      }
+      .option.active {
+        border-color: var(--brand);
+        background: #ecfdf5;
+        color: var(--brand-dark);
+        font-weight: 600;
+      }
+
+      .desc,
+      .reviews {
+        background: var(--card);
+        padding: 16px;
+        margin-top: 8px;
+        border-radius: var(--radius);
+      }
+      .desc h2,
+      .reviews h2 {
+        font-size: 16px;
+        margin-bottom: 8px;
+      }
+      .desc p {
+        line-height: 1.5;
+        color: var(--muted);
+      }
+
+      .buybar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #fff;
+        padding: 10px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-top: 1px solid #e5e7eb;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+      }
+      .buybar .price {
+        font-size: 18px;
+        margin: 0;
+      }
+      .buybtn {
+        flex: 0 0 auto;
+        background: linear-gradient(90deg, var(--brand), var(--brand-dark));
+        color: #fff;
+        padding: 12px 20px;
+        border: none;
+        border-radius: var(--radius);
+        font-weight: 600;
+        font-size: 15px;
+        cursor: pointer;
+      }
+
+      /* Konfirmasi Modal */
+      .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+      }
+      .modal-content {
+        background: #fff;
+        padding: 20px;
+        border-radius: var(--radius);
+        width: 90%;
+        max-width: 380px;
+        box-shadow: var(--shadow);
+        text-align: center;
+      }
+      .modal-content img {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+        border-radius: var(--radius);
+        margin-bottom: 12px;
+      }
+      .modal h2 {
+        font-size: 18px;
+        margin-bottom: 8px;
+      }
+      .modal p {
+        margin: 4px 0;
+        color: var(--muted);
+      }
+      .modal .price {
+        margin: 8px 0;
+      }
+      .modal-actions {
+        margin-top: 14px;
+        display: flex;
+        gap: 10px;
+      }
+      .btn {
+        flex: 1;
+        padding: 10px;
+        border-radius: var(--radius);
+        cursor: pointer;
+        font-weight: 600;
+      }
+      .btn.cancel {
+        background: #e5e7eb;
+        color: #374151;
+      }
+      .btn.confirm {
+        background: var(--brand);
+        color: #fff;
+      }
+
+      /* Input jumlah beli */
+      #qty {
+        width: 80px;
+        padding: 6px;
+        text-align: center;
+        margin-top: 6px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a class="logo" href='../index.html'>←</a>
+      <div>Sop Buah Segar</div>
+    </header>
+
+    <main>
+      <!-- Gallery scroll -->
+      <section class="gallery" id="gallery">
+        <img src="mini.jpeg" alt="Sop Buah Kecil" />
+        <img src="sedang.jpeg" alt="Sop Buah Sedang" />
+        <img src="jumbo.jpeg" alt="Sop Buah Besar" />
+      </section>
+
+      <section class="product">
+        <h1>Sop Buah Segar</h1>
+        <div class="price" id="selectedPrice">Rp 5.000</div>
+        <div class="muted">Pilih ukuran sesuai selera</div>
+
+        <div class="options">
+          <div
+            class="option active"
+            data-name="Ukuran Kecil"
+            data-price="5000"
+            data-img="mini.jpeg"
+          >
+            Kecil
+          </div>
+          <div
+            class="option"
+            data-name="Ukuran Sedang"
+            data-price="7000"
+            data-img="sedang.jpeg"
+          >
+            Sedang
+          </div>
+          <div
+            class="option"
+            data-name="Ukuran Besar"
+            data-price="10000"
+            data-img="jumbo.jpeg"
+          >
+            Besar
+          </div>
+        </div>
+      </section>
+
+      <section class="desc">
+        <h2>Deskripsi Produk</h2>
+        <p>
+          Sop buah segar dengan campuran buah, susu, dan es. Segar, sehat, dan
+          cocok diminum saat cuaca panas. Tersedia dalam 3 ukuran.
+        </p>
+      </section>
+    </main>
+
+    <div class="buybar">
+      <div>
+        <p class="muted">Total</p>
+        <p class="price" id="buyPrice">Rp 5.000</p>
+      </div>
+      <button class="buybtn" onclick="showConfirm()">Beli Sekarang</button>
+    </div>
+
+    <!-- Modal Konfirmasi -->
+    <div class="modal" id="confirmModal">
+      <div class="modal-content">
+        <img src="mini.jpeg" alt="Produk" id="confirmImg" />
+        <h2 id="confirmName">Sop Buah Segar</h2>
+        <p id="confirmVariant">Ukuran Kecil</p>
+        <p class="price" id="confirmPrice">Rp 5.000</p>
+
+        <!-- Input jumlah beli -->
+        <label for="qty" style="font-size:14px; color:#374151;">Jumlah Beli:</label>
+        <input type="number" id="qty" value="1" min="1">
+
+        <div class="modal-actions">
+          <div class="btn cancel" onclick="closeConfirm()">Batal</div>
+          <div class="btn confirm" onclick="order()">Konfirmasi</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const WA_NUMBER = "6283105735395"; // ganti nomor WA
+      const options = document.querySelectorAll(".option");
+      let selected = { name: "Ukuran Kecil", price: 5000, img: "mini.jpeg" };
+
+      options.forEach((opt) => {
+        opt.addEventListener("click", () => {
+          options.forEach((o) => o.classList.remove("active"));
+          opt.classList.add("active");
+          selected = {
+            name: opt.dataset.name,
+            price: parseInt(opt.dataset.price),
+            img: opt.dataset.img,
+          };
+          document.getElementById(
+            "selectedPrice"
+          ).textContent = `Rp ${selected.price.toLocaleString("id-ID")}`;
+          document.getElementById(
+            "buyPrice"
+          ).textContent = `Rp ${selected.price.toLocaleString("id-ID")}`;
+        });
+      });
+
+      function showConfirm() {
+        document.getElementById("confirmName").textContent = "Sop Buah Segar";
+        document.getElementById("confirmVariant").textContent = selected.name;
+        document.getElementById(
+          "confirmPrice"
+        ).textContent = `Rp ${selected.price.toLocaleString("id-ID")}`;
+        document.getElementById("confirmImg").src = selected.img;
+        document.getElementById("qty").value = 1;
+        document.getElementById("confirmModal").style.display = "flex";
+      }
+
+      function closeConfirm() {
+        document.getElementById("confirmModal").style.display = "none";
+        document
+          .getElementById("gallery")
+          .scrollIntoView({ behavior: "smooth" });
+      }
+
+      function order() {
+        closeConfirm();
+        const qty = parseInt(document.getElementById("qty").value) || 1;
+        const total = selected.price * qty;
+        const text = `Halo kak, saya mau pesan:\n• Sop Buah Segar\n• Varian: ${selected.name}\n• Harga Satuan: Rp ${selected.price.toLocaleString(
+          "id-ID"
+        )}\n• Jumlah: ${qty}\n• Total: Rp ${total.toLocaleString(
+          "id-ID"
+        )}\n\nApakah stok tersedia?`;
+
+        const url = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(
+          text
+        )}`;
+        window.open(url, "_blank");
+      }
+    </script>
+  </body>
+</html>
